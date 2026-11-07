@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-heading"><div><p class="eyebrow">Orçamentos / Novo registro</p><h1>Criar orçamento</h1><p class="page-description">Registre os serviços previstos para um cliente e seu veículo. Os valores são conferidos no servidor antes da gravação.</p></div><a class="btn-secondary-custom" href="{% url 'orcamento-list' %}">Ver orçamentos</a></section>
+<form method="post" novalidate>
+  {% csrf_token %}
+  {% if not tem_clientes or not tem_veiculos or not tem_servicos %}
+    <div class="notice-box setup-notice"><span class="notice-icon">i</span><div><strong>Cadastros necessários</strong><p>Para criar um orçamento, é necessário ter ao menos um cliente ativo, um veículo associado a esse cliente e um serviço ativo. {% if not tem_clientes %}<a href="{% url 'cliente-create' %}">Cadastrar cliente</a>. {% endif %}{% if not tem_veiculos %}<a href="{% url 'veiculo-create' %}">Cadastrar veículo</a>. {% endif %}{% if not tem_servicos %}<a href="{% url 'servico-create' %}">Cadastrar serviço</a>.{% endif %}</p></div></div>
+  {% endif %}
+  <div class="budget-layout">
+    <section class="panel-card form-card">
+      <h2 class="section-heading">1. Identificação</h2><p class="section-subtitle">Selecione um cliente e um veículo que pertença a ele.</p>
+      {% if form.non_field_errors %}<div class="form-errors" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+      <div class="form-grid">
+        {% for field in form.visible_fields %}
+          <div class="form-field {% if field.name == 'observacoes' %}field-wide{% endif %}">{{ field.label_tag }}{{ field }}{% for error in field.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>
+        {% endfor %}
+      </div>
+      <hr class="section-divider">
+      <div class="section-title-row"><div><h2 class="section-heading">2. Serviços e valores</h2><p class="section-subtitle">Adicione um ou mais serviços cadastrados.</p></div><button type="button" class="btn-light-custom" id="add-item">＋ Adicionar serviço</button></div>
+      {{ formset.management_form }}
+      {% if formset.non_form_errors %}<div class="form-errors" role="alert">{{ formset.non_form_errors }}</div>{% endif %}
+      <div id="item-formset" class="item-formset">
+        {% for item_form in formset %}
+          <div class="item-row">
+            <div class="item-service">{{ item_form.servico.label_tag }}{{ item_form.servico }}{% for error in item_form.servico.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>
+            <div class="item-quantity">{{ item_form.quantidade.label_tag }}{{ item_form.quantidade }}{% for error in item_form.quantidade.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>
+            <span class="delete-control visually-hidden">{{ item_form.DELETE }}</span>
+            <button type="button" class="remove-item" aria-label="Remover este serviço" title="Remover serviço">×</button>
+          </div>
+        {% endfor %}
+      </div>
+      <template id="empty-item-form">
+        <div class="item-row">
+          <div class="item-service">{{ formset.empty_form.servico.label_tag }}{{ formset.empty_form.servico }}</div>
+          <div class="item-quantity">{{ formset.empty_form.quantidade.label_tag }}{{ formset.empty_form.quantidade }}</div>
+          <span class="delete-control visually-hidden">{{ formset.empty_form.DELETE }}</span>
+          <button type="button" class="remove-item" aria-label="Remover este serviço" title="Remover serviço">×</button>
+        </div>
+      </template>
+      <p class="field-help">O sistema registra a descrição e o preço vigente do serviço no momento da criação, preservando o histórico do orçamento.</p>
+      <div class="form-actions"><a class="btn-light-custom" href="{% url 'dashboard' %}">Cancelar</a><button type="submit" class="btn-primary-custom">✓ Salvar orçamento</button></div>
+    </section>
+    <aside class="summary-card">
+      <p class="summary-eyebrow">Resumo do orçamento</p><h2>Antes de confirmar</h2>
+      <div class="summary-line"><span>Serviços</span><strong>1 a 10 itens</strong></div>
+      <div class="summary-line"><span>Status inicial</span><strong>Em análise</strong></div>
+      <div class="summary-line"><span>Validade padrão</span><strong>7 dias</strong></div>
+      <div class="summary-total"><span>Valor total</span><strong>Calculado ao salvar</strong></div>
+      <div class="summary-note">O total é calculado no servidor com base na quantidade e no preço registrado de cada serviço.</div>
+    </aside>
+  </div>
+</form>
+{% endblock %}

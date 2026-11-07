@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-heading"><div><p class="eyebrow">Cadastros administrativos</p><h1>{{ page_title }}</h1><p class="page-description">{{ page_description }}</p></div></section>
+<section class="panel-card form-card">
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="form-errors" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+    <div class="form-grid">
+      {% for field in form.visible_fields %}
+        <div class="form-field {% if field.name == 'descricao' %}field-wide{% endif %} {% if field.field.widget.input_type == 'checkbox' %}checkbox-field{% endif %}">
+          {% if field.field.widget.input_type == 'checkbox' %}<label class="checkbox-label">{{ field }} <span>{{ field.label }}</span></label>
+          {% else %}{{ field.label_tag }}{{ field }}{% endif %}
+          {% if field.help_text %}<small class="field-help">{{ field.help_text }}</small>{% endif %}
+          {% for error in field.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+    <div class="form-actions"><a class="btn-light-custom" href="{% url cancel_url %}">Cancelar</a><button class="btn-primary-custom" type="submit">{{ submit_label }}</button></div>
+  </form>
+</section>
+{% endblock %}

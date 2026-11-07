@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-heading"><div><p class="eyebrow">Controle administrativo</p><h1>Orçamentos</h1><p class="page-description">Consulte os registros, identifique a situação e mantenha o acompanhamento atualizado.</p></div><a class="btn-primary-custom" href="{% url 'orcamento-create' %}">＋ Novo orçamento</a></section>
+<section class="panel-card">
+  <div class="panel-heading"><div><h2>Lista de orçamentos</h2><p>{{ orcamentos|length }} registro(s) nesta consulta</p></div></div>
+  <form method="get" class="filter-bar" role="search">
+    <label for="budget-search" class="visually-hidden">Buscar orçamento</label><input id="budget-search" class="search-input" type="search" name="q" value="{{ termo }}" placeholder="Buscar por código, cliente ou veículo">
+    <label for="status-filter" class="visually-hidden">Filtrar por status</label><select id="status-filter" name="status" class="filter-select"><option value="">Todos os status</option>{% for value,label in status_choices %}<option value="{{ value }}" {% if status_atual == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+    <button class="btn-secondary-custom" type="submit">Filtrar</button><a class="btn-light-custom" href="{% url 'orcamento-list' %}">Limpar</a>
+  </form>
+  <div class="table-responsive"><table class="data-table"><thead><tr><th>Código</th><th>Cliente / veículo</th><th>Data</th><th>Valor total</th><th>Status</th><th>Atualizar situação</th></tr></thead><tbody>
+    {% for item in orcamentos %}
+      <tr>
+        <td><strong>{{ item.codigo }}</strong></td>
+        <td><strong>{{ item.cliente.nome }}</strong><small class="table-secondary">{{ item.veiculo.marca }} {{ item.veiculo.modelo }} · {{ item.veiculo.ano }}</small></td>
+        <td>{{ item.criado_em|date:"d/m/Y" }}</td><td class="numeric"><strong>R$ {{ item.total|floatformat:2 }}</strong></td>
+        <td><span class="status-badge {{ item.status_class }}">{{ item.get_status_display }}</span></td>
+        <td><form method="post" action="{% url 'orcamento-status' item.pk %}" class="status-update-form">{% csrf_token %}<label class="visually-hidden" for="status-{{ item.pk }}">Novo status de {{ item.codigo }}</label><select id="status-{{ item.pk }}" name="status" class="compact-select">{% for value,label in status_choices %}<option value="{{ value }}" {% if item.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select><button type="submit" class="table-action">Salvar</button></form></td>
+      </tr>
+    {% empty %}<tr><td colspan="6" class="empty-cell">Nenhum orçamento encontrado. Ajuste os filtros ou crie um novo registro.</td></tr>{% endfor %}
+  </tbody></table></div>
+  <div class="table-meta">Os status são identificados por texto e marcador visual; a informação não depende apenas de cor.</div>
+</section>
+{% endblock %}

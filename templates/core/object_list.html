@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-heading">
+  <div><p class="eyebrow">Cadastros administrativos</p><h1>{{ page_title }}</h1><p class="page-description">{{ page_description }}</p></div>
+  <a class="btn-primary-custom" href="{% url create_url %}"><span aria-hidden="true">＋</span> Novo registro</a>
+</section>
+<section class="panel-card">
+  <form method="get" class="filter-bar" role="search">
+    <label class="visually-hidden" for="search-records">Pesquisar registros</label>
+    <input id="search-records" name="q" type="search" value="{{ termo }}" placeholder="{{ search_placeholder }}" class="search-input">
+    <button class="btn-secondary-custom" type="submit">Buscar</button>
+    {% if termo %}<a class="btn-light-custom" href="{% url request.resolver_match.url_name %}">Limpar</a>{% endif %}
+  </form>
+  <div class="table-responsive">
+    <table class="data-table">
+      {% if object_type == "clientes" %}
+        <thead><tr><th>Cliente</th><th>Telefone</th><th>E-mail</th><th>Situação</th><th class="actions-col">Ações</th></tr></thead>
+        <tbody>{% for obj in registros %}<tr><td><strong>{{ obj.nome }}</strong></td><td>{{ obj.telefone|default:"—" }}</td><td>{{ obj.email|default:"—" }}</td><td>{% if obj.ativo %}<span class="status-badge status-approved">Ativo</span>{% else %}<span class="status-badge status-neutral">Inativo</span>{% endif %}</td><td class="actions-col"><a class="table-action" href="{% url 'cliente-update' obj.pk %}">Editar</a><a class="table-action danger-link" href="{% url 'cliente-delete' obj.pk %}">Excluir</a></td></tr>{% empty %}<tr><td colspan="5" class="empty-cell">Nenhum cliente encontrado.</td></tr>{% endfor %}</tbody>
+      {% elif object_type == "veiculos" %}
+        <thead><tr><th>Veículo</th><th>Cliente</th><th>Ano</th><th>Placa</th><th class="actions-col">Ações</th></tr></thead>
+        <tbody>{% for obj in registros %}<tr><td><strong>{{ obj.marca }} {{ obj.modelo }}</strong></td><td>{{ obj.cliente.nome }}</td><td>{{ obj.ano }}</td><td>{{ obj.placa|default:"—" }}</td><td class="actions-col"><a class="table-action" href="{% url 'veiculo-update' obj.pk %}">Editar</a><a class="table-action danger-link" href="{% url 'veiculo-delete' obj.pk %}">Excluir</a></td></tr>{% empty %}<tr><td colspan="5" class="empty-cell">Nenhum veículo encontrado.</td></tr>{% endfor %}</tbody>
+      {% else %}
+        <thead><tr><th>Serviço</th><th>Descrição</th><th>Preço</th><th>Disponibilidade</th><th class="actions-col">Ações</th></tr></thead>
+        <tbody>{% for obj in registros %}<tr><td><strong>{{ obj.nome }}</strong></td><td>{{ obj.descricao|default:"—" }}</td><td class="numeric">R$ {{ obj.preco|floatformat:2 }}</td><td>{% if obj.ativo %}<span class="status-badge status-approved">Disponível</span>{% else %}<span class="status-badge status-neutral">Inativo</span>{% endif %}</td><td class="actions-col"><a class="table-action" href="{% url 'servico-update' obj.pk %}">Editar</a><a class="table-action danger-link" href="{% url 'servico-delete' obj.pk %}">Excluir</a></td></tr>{% empty %}<tr><td colspan="5" class="empty-cell">Nenhum serviço encontrado.</td></tr>{% endfor %}</tbody>
+      {% endif %}
+    </table>
+  </div>
+  {% if is_paginated %}<div class="pagination-bar"><span>Exibindo {{ page_obj.start_index }}–{{ page_obj.end_index }} de {{ paginator.count }} registro(s)</span><div class="pagination-links">{% if page_obj.has_previous %}<a href="?q={{ termo|urlencode }}&page={{ page_obj.previous_page_number }}">Anterior</a>{% endif %}<span>Página {{ page_obj.number }} de {{ paginator.num_pages }}</span>{% if page_obj.has_next %}<a href="?q={{ termo|urlencode }}&page={{ page_obj.next_page_number }}">Próxima</a>{% endif %}</div></div>{% endif %}
+</section>
+{% endblock %}

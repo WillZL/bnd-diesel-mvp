@@ -1,0 +1,64 @@
+{% load static %}
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Sistema administrativo da BND Diesel para clientes, veículos, serviços e orçamentos.">
+  <title>{% if page_title %}{{ page_title }} · {% endif %}BND Diesel</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{% static 'css/app.css' %}" rel="stylesheet">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="{% url 'dashboard' %}" aria-label="BND Diesel — página inicial">
+      <span class="brand-mark">BND</span>
+      <span class="brand-copy"><strong>BND DIESEL</strong><small>Gestão de oficina</small></span>
+    </a>
+    <div class="nav-label">Menu principal</div>
+    <nav class="main-nav" aria-label="Navegação principal">
+      <a class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}" {% if request.resolver_match.url_name == 'dashboard' %}aria-current="page"{% endif %}><span class="nav-icon" aria-hidden="true">⌂</span><span class="nav-text">Visão geral</span></a>
+      <a class="nav-item {% if 'cliente-' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'cliente-list' %}" {% if 'cliente-' in request.resolver_match.url_name %}aria-current="page"{% endif %}><span class="nav-icon" aria-hidden="true">♙</span><span class="nav-text">Clientes</span></a>
+      <a class="nav-item {% if 'veiculo-' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'veiculo-list' %}" {% if 'veiculo-' in request.resolver_match.url_name %}aria-current="page"{% endif %}><span class="nav-icon" aria-hidden="true">▰</span><span class="nav-text">Veículos</span></a>
+      <a class="nav-item {% if 'servico-' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'servico-list' %}" {% if 'servico-' in request.resolver_match.url_name %}aria-current="page"{% endif %}><span class="nav-icon" aria-hidden="true">⚙</span><span class="nav-text">Serviços</span></a>
+      <a class="nav-item {% if 'orcamento-' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'orcamento-list' %}" {% if 'orcamento-' in request.resolver_match.url_name %}aria-current="page"{% endif %}><span class="nav-icon" aria-hidden="true">▤</span><span class="nav-text">Orçamentos</span></a>
+    </nav>
+    <div class="sidebar-bottom">
+      <span>Ambiente administrativo</span>
+      <div class="system-status"><span class="status-dot"></span> Sistema disponível</div>
+    </div>
+  </aside>
+
+  <main class="main-area">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button type="button" class="menu-toggle" id="menu-toggle" aria-label="Abrir ou fechar menu" aria-controls="sidebar" aria-expanded="false">☰</button>
+        <div class="breadcrumb">BND Diesel <span aria-hidden="true">/</span> <strong>{{ page_title|default:"Visão geral" }}</strong></div>
+      </div>
+      <div class="user-area">
+        <div class="avatar" aria-hidden="true">{{ request.user.username|slice:":2"|upper }}</div>
+        <div class="user-copy"><strong>{{ request.user.get_full_name|default:request.user.username }}</strong><small>Usuário autenticado</small></div>
+        <form method="post" action="{% url 'logout' %}" class="logout-form">
+          {% csrf_token %}
+          <button class="logout-button" type="submit">Sair</button>
+        </form>
+      </div>
+    </header>
+
+    <div class="content-wrap">
+      {% if messages %}
+        <div class="messages" aria-live="polite" aria-atomic="true">
+          {% for message in messages %}
+            <div class="alert-message {% if message.tags == 'error' %}alert-error{% elif message.tags == 'success' %}alert-success{% else %}alert-info{% endif %}" role="status">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% block content %}{% endblock %}
+      <footer class="app-footer"><span>BND Diesel · Sistema administrativo</span><span>Projeto acadêmico — MVP</span></footer>
+    </div>
+  </main>
+</div>
+<script src="{% static 'js/app.js' %}" defer></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-heading"><div><p class="eyebrow">Confirmação</p><h1>Excluir registro</h1><p class="page-description">Revise a informação antes de confirmar a exclusão.</p></div></section>
+<section class="panel-card confirm-card">
+  <p>Você está prestes a excluir <strong>{{ object }}</strong>.</p>
+  <p class="muted-text">Essa ação não poderá ser desfeita. Registros associados podem impedir a exclusão para preservar o histórico.</p>
+  <form method="post">{% csrf_token %}<div class="form-actions"><a class="btn-light-custom" href="{% url cancel_url %}">Cancelar</a><button class="btn-danger-custom" type="submit">Confirmar exclusão</button></div></form>
+</section>
+{% endblock %}
