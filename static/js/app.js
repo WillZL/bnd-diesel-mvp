@@ -45,3 +45,64 @@ if (addItemButton && itemContainer && emptyItemTemplate && totalForms) {
     nextSelect?.focus();
   });
 }
+
+// Formata telefones brasileiros no cadastro/edição de clientes.
+// Aceita números nacionais com DDD (10 ou 11 dígitos) e prefixo opcional +55.
+const phoneInput = document.querySelector('[data-phone-mask="br"]');
+
+if (phoneInput) {
+  const formatBrazilianPhone = (value) => {
+    let digits = value.replace(/\D/g, "");
+
+    // Remove o código do país quando informado antes do DDD.
+    if ((digits.length === 12 || digits.length === 13) && digits.startsWith("55")) {
+      digits = digits.slice(2);
+    }
+
+    digits = digits.slice(0, 11);
+    if (!digits) return "";
+
+    if (digits.length <= 2) return `(${digits}`;
+
+    const areaCode = digits.slice(0, 2);
+    const subscriber = digits.slice(2);
+
+    if (digits.length <= 6) return `(${areaCode}) ${subscriber}`;
+    if (digits.length <= 10) {
+      return `(${areaCode}) ${subscriber.slice(0, 4)}-${subscriber.slice(4)}`;
+    }
+
+    return `(${areaCode}) ${subscriber.slice(0, 5)}-${subscriber.slice(5)}`;
+  };
+
+  const applyPhoneMask = () => {
+    const cursor = phoneInput.selectionStart;
+    const digitsBeforeCursor = phoneInput.value
+      .slice(0, cursor === null ? phoneInput.value.length : cursor)
+      .replace(/\D/g, "").length;
+
+    const formattedValue = formatBrazilianPhone(phoneInput.value);
+    phoneInput.value = formattedValue;
+
+    // Preserva a posição aproximada do cursor durante a digitação/edição.
+    if (cursor !== null && document.activeElement === phoneInput) {
+      let newCursor = 0;
+      let digitsSeen = 0;
+
+      while (newCursor < formattedValue.length && digitsSeen < digitsBeforeCursor) {
+        if (/\d/.test(formattedValue[newCursor])) digitsSeen += 1;
+        newCursor += 1;
+      }
+
+      phoneInput.setSelectionRange(newCursor, newCursor);
+    }
+  };
+
+  phoneInput.addEventListener("input", applyPhoneMask);
+
+  // Também padroniza valores já existentes ao abrir a tela de edição.
+  if (phoneInput.value) {
+    phoneInput.value = formatBrazilianPhone(phoneInput.value);
+  }
+}
+

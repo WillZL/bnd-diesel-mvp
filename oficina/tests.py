@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase, Client as DjangoClient
 from django.urls import reverse
 
+from .forms import ClienteForm
 from .models import Cliente, ItemOrcamento, Orcamento, Servico, Veiculo
 
 
@@ -104,6 +105,14 @@ class OficinaFlowTests(TestCase):
         response = self.client.get(reverse("orcamento-list"), {"q": orcamento.codigo})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, orcamento.codigo)
+
+    def test_client_phone_widget_exposes_brazilian_mask_attributes(self):
+        phone_widget = ClienteForm().fields["telefone"].widget
+
+        self.assertEqual(phone_widget.attrs.get("data-phone-mask"), "br")
+        self.assertEqual(phone_widget.attrs.get("inputmode"), "tel")
+        self.assertEqual(phone_widget.attrs.get("maxlength"), str(Cliente._meta.get_field("telefone").max_length),)
+        self.assertEqual(phone_widget.attrs.get("autocomplete"), "tel")
 
     def test_service_price_is_copied_to_budget_item(self):
         orcamento = Orcamento.objects.create(cliente=self.cliente, veiculo=self.veiculo)

@@ -24,7 +24,12 @@ class ClienteForm(StyledModelForm):
         fields = ["nome", "telefone", "email", "ativo"]
         widgets = {
             "nome": forms.TextInput(attrs={"autocomplete": "name", "placeholder": "Nome do cliente"}),
-            "telefone": forms.TextInput(attrs={"autocomplete": "tel", "placeholder": "(00) 00000-0000"}),
+            "telefone": forms.TextInput(attrs={
+                "autocomplete": "tel",
+                "inputmode": "tel",
+                "data-phone-mask": "br",
+                "placeholder": "(00) 00000-0000",
+            }),
             "email": forms.EmailInput(attrs={"autocomplete": "email", "placeholder": "cliente@exemplo.com"}),
         }
 
