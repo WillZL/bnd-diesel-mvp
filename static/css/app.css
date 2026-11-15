@@ -96,7 +96,7 @@ h1 { margin: 0; color: var(--navy); font-size: clamp(23px, 2.3vw, 29px); font-we
 .data-table tr:last-child td { border-bottom: 0; }
 .data-table td strong { color: var(--navy); }
 .table-secondary { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; }
-.numeric { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.numerico { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 8px; border-radius: 6px; font-size: 10px; font-weight: 850; white-space: nowrap; }
 .status-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 .status-analysis { background: var(--orange-bg); color: var(--orange); }

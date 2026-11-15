@@ -13,7 +13,7 @@
       <tr>
         <td><strong>{{ item.codigo }}</strong></td>
         <td><strong>{{ item.cliente.nome }}</strong><small class="table-secondary">{{ item.veiculo.marca }} {{ item.veiculo.modelo }} · {{ item.veiculo.ano }}</small></td>
-        <td>{{ item.criado_em|date:"d/m/Y" }}</td><td class="numeric"><strong>R$ {{ item.total|floatformat:2 }}</strong></td>
+        <td>{{ item.criado_em|date:"d/m/Y" }}</td><td class="numerico"><strong>R$ {{ item.total|floatformat:2 }}</strong></td>
         <td><span class="status-badge {{ item.status_class }}">{{ item.get_status_display }}</span></td>
         <td><form method="post" action="{% url 'orcamento-status' item.pk %}" class="status-update-form">{% csrf_token %}<label class="visually-hidden" for="status-{{ item.pk }}">Novo status de {{ item.codigo }}</label><select id="status-{{ item.pk }}" name="status" class="compact-select">{% for value,label in status_choices %}<option value="{{ value }}" {% if item.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select><button type="submit" class="table-action">Salvar</button></form></td>
       </tr>
