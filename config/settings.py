@@ -84,6 +84,7 @@ if os.getenv("DB_ENGINE", "sqlite").lower() in {"postgres", "postgresql"}:
             "CONN_MAX_AGE": 60,
             "OPTIONS": {
                 "sslmode": os.getenv("DB_SSLMODE", "require"),
+                "channel_binding": os.getenv("DB_CHANNEL_BINDING", "require"),
             },
         }
     }
